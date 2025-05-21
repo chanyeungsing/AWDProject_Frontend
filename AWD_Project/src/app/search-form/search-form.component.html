@@ -1,0 +1,19 @@
+<form [formGroup]="searchForm" (ngSubmit)="onSubmit(searchForm.value)" class="">
+    <div>
+        <label for="Bank">Bank:</label>
+        <input id="bank" type="text" formControlName="bank" />
+    </div>
+    <div>
+        <label for="district">District:</label>
+        <input id="district" type="text" formControlName="district" />
+    </div>
+    <div>
+        <label for="branch">Branch:</label>
+        <input id="branch" type="text" formControlName="branch" />
+    </div>
+    <div>
+        <button type="submit">
+            Submit
+        </button>
+    </div>
+</form>
