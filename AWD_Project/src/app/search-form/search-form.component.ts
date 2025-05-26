@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+//import { HttpClient, HttpResponse } from '@angular/common/http';
+
+
 
 @Component({
   selector: 'app-search-form',
@@ -10,8 +13,10 @@ import { CommonModule } from '@angular/common';
 })
 export class SearchFormComponent {
   searchForm: FormGroup;
+  //http: HttpClient;
 
-  constructor(fb: FormBuilder) {
+  constructor(fb: FormBuilder,) {
+    //this.http = HttpClient
     this.searchForm = fb.group(
       {
         'bank': ['', Validators.required],
@@ -22,6 +27,9 @@ export class SearchFormComponent {
   }
   onSubmit(formValue: any): void {
     console.log(formValue);
+    //const itemCourt = new URLSearchParams(params).size;
+    //let url = "http://localhost/index.php?controller=bank";
+
 
   }
 }
