@@ -1,0 +1,153 @@
+import { Component, inject } from '@angular/core';
+
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCardModule } from '@angular/material/card';
+import { HttpClient, httpResource } from '@angular/common/http';
+
+
+@Component({
+  selector: 'app-mat-form',
+  templateUrl: './mat-form.component.html',
+  styleUrl: './mat-form.component.css',
+  imports: [
+    MatInputModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatRadioModule,
+    MatCardModule,
+    ReactiveFormsModule
+  ]
+})
+export class MatFormComponent {
+  http: HttpClient;
+  banklist : any;
+  districtlist : any;
+
+  constructor(http: HttpClient) {
+    this.http = http;
+  }
+
+
+  private fb = inject(FormBuilder);
+  BankBranchForm = this.fb.group({
+    Bank: [null,],
+    Branch: [null,],
+    District: [null,],
+  });
+
+
+  hasUnitNumber = false;
+
+  getbanklist() {
+    let url = 'http://localhost:8888/awd/index.php?controller=bank'
+    let slave = this.http.get(url)
+    slave.subscribe({
+      next: (res) => {
+        console.log(res)
+        return JSON.parse(JSON.stringify(res))
+      },
+      error: (err) => {
+        console.log(err);
+        alert("get banklist failed.")
+      }
+    })
+  }
+
+  getdistrictlist() {
+    let url = 'http://localhost:8888/awd/index.php?controller=district'
+    let slave = this.http.get(url)
+    slave.subscribe({
+      next: (res) => {
+        console.log(res)
+        return JSON.parse(JSON.stringify(res))
+      },
+      error: (err) => {
+        console.log(err);
+        alert("get banklist failed.")
+      }
+    })
+  }
+
+
+  
+
+
+  ngOnInit() {
+    // get banklist
+    this.banklist = this.getbanklist()
+    this.districtlist = this.getdistrictlist()
+
+  }
+
+
+
+  states = [
+    { name: 'Alabama', abbreviation: 'AL' },
+    { name: 'Alaska', abbreviation: 'AK' },
+    { name: 'American Samoa', abbreviation: 'AS' },
+    { name: 'Arizona', abbreviation: 'AZ' },
+    { name: 'Arkansas', abbreviation: 'AR' },
+    { name: 'California', abbreviation: 'CA' },
+    { name: 'Colorado', abbreviation: 'CO' },
+    { name: 'Connecticut', abbreviation: 'CT' },
+    { name: 'Delaware', abbreviation: 'DE' },
+    { name: 'District Of Columbia', abbreviation: 'DC' },
+    { name: 'Federated States Of Micronesia', abbreviation: 'FM' },
+    { name: 'Florida', abbreviation: 'FL' },
+    { name: 'Georgia', abbreviation: 'GA' },
+    { name: 'Guam', abbreviation: 'GU' },
+    { name: 'Hawaii', abbreviation: 'HI' },
+    { name: 'Idaho', abbreviation: 'ID' },
+    { name: 'Illinois', abbreviation: 'IL' },
+    { name: 'Indiana', abbreviation: 'IN' },
+    { name: 'Iowa', abbreviation: 'IA' },
+    { name: 'Kansas', abbreviation: 'KS' },
+    { name: 'Kentucky', abbreviation: 'KY' },
+    { name: 'Louisiana', abbreviation: 'LA' },
+    { name: 'Maine', abbreviation: 'ME' },
+    { name: 'Marshall Islands', abbreviation: 'MH' },
+    { name: 'Maryland', abbreviation: 'MD' },
+    { name: 'Massachusetts', abbreviation: 'MA' },
+    { name: 'Michigan', abbreviation: 'MI' },
+    { name: 'Minnesota', abbreviation: 'MN' },
+    { name: 'Mississippi', abbreviation: 'MS' },
+    { name: 'Missouri', abbreviation: 'MO' },
+    { name: 'Montana', abbreviation: 'MT' },
+    { name: 'Nebraska', abbreviation: 'NE' },
+    { name: 'Nevada', abbreviation: 'NV' },
+    { name: 'New Hampshire', abbreviation: 'NH' },
+    { name: 'New Jersey', abbreviation: 'NJ' },
+    { name: 'New Mexico', abbreviation: 'NM' },
+    { name: 'New York', abbreviation: 'NY' },
+    { name: 'North Carolina', abbreviation: 'NC' },
+    { name: 'North Dakota', abbreviation: 'ND' },
+    { name: 'Northern Mariana Islands', abbreviation: 'MP' },
+    { name: 'Ohio', abbreviation: 'OH' },
+    { name: 'Oklahoma', abbreviation: 'OK' },
+    { name: 'Oregon', abbreviation: 'OR' },
+    { name: 'Palau', abbreviation: 'PW' },
+    { name: 'Pennsylvania', abbreviation: 'PA' },
+    { name: 'Puerto Rico', abbreviation: 'PR' },
+    { name: 'Rhode Island', abbreviation: 'RI' },
+    { name: 'South Carolina', abbreviation: 'SC' },
+    { name: 'South Dakota', abbreviation: 'SD' },
+    { name: 'Tennessee', abbreviation: 'TN' },
+    { name: 'Texas', abbreviation: 'TX' },
+    { name: 'Utah', abbreviation: 'UT' },
+    { name: 'Vermont', abbreviation: 'VT' },
+    { name: 'Virgin Islands', abbreviation: 'VI' },
+    { name: 'Virginia', abbreviation: 'VA' },
+    { name: 'Washington', abbreviation: 'WA' },
+    { name: 'West Virginia', abbreviation: 'WV' },
+    { name: 'Wisconsin', abbreviation: 'WI' },
+    { name: 'Wyoming', abbreviation: 'WY' }
+  ];
+
+  onSubmit(): void {
+    alert('Thanks!');
+  }
+}

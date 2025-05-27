@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
-
-//import Routes
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { MatNavComponent } from './mat-nav/mat-nav.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,RouterLink],
+  imports: [MatNavComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

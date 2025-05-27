@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { SearchFormComponent } from '../search-form/search-form.component';
+import { MatFormComponent } from '../mat-form/mat-form.component';
+import { MatTableComponent } from '../mat-table/mat-table.component';
 
 @Component({
   selector: 'app-admin-page',
-  imports: [SearchFormComponent],
+  imports: [MatFormComponent,MatTableComponent],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.css'
 })
