@@ -1,4 +1,4 @@
-<form [formGroup]="BankBranchForm" novalidate (ngSubmit)="onSubmit()">
+<form [formGroup]="BankBranchForm" novalidate (ngSubmit)="onSubmit(BankBranchForm.value)">
   <mat-card class="shipping-card">
     <mat-card-header>
       <mat-card-title>Bank Branch Search</mat-card-title>
