@@ -24,8 +24,8 @@ import { HttpClient, httpResource } from '@angular/common/http';
 })
 export class MatFormComponent {
   http: HttpClient;
-  banklist: any;
-  districtlist: any;
+  banklist!: any;
+  districtlist!: any;
 
   constructor(http: HttpClient) {
     this.http = http;
@@ -39,37 +39,6 @@ export class MatFormComponent {
     District: [null,],
   });
 
-
-  hasUnitNumber = false;
-
-
-
-
-
-
-  ngOnInit() {
-    // get banklist
-    //this.banklist = this.getbanklist()
-    //this.districtlist = this.getdistrictlist()
-    this.banklist = [
-            {
-                "bank_key": "1",
-                "bank_name_en": "Industrial and Commercial Bank of China (Asia) Limited",
-                "bank_name_tc": null,
-                "bank_name_sc": null
-            },
-            {
-                "bank_key": "2",
-                "bank_name_en": "Bank of  Communications (Hong Kong) Limited",
-                "bank_name_tc": null,
-                "bank_name_sc": null
-            }
-    ];
-    this.districtlist =[
-      
-    ]
-
-  }
 
   onSubmit(formValue: any) {
     let controller = '';
@@ -86,21 +55,27 @@ export class MatFormComponent {
     console.log(url);
     console.log(formValue);
   }
-  /* 
-    getbanklist() {
-      let url = 'http://localhost:80/awd/index.php?controller=bank'
-      let slave = this.http.get(url)
-      slave.subscribe({
-        next: (res) => {
-          console.log(res)
-          return JSON.parse(JSON.stringify(res))
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      })
-    } 
-  */
+
+
+
+  ngOnInit() {
+    this.getbanklist()
+    this.getdistrictlist()
+  }
+
+  getbanklist() {
+    let url = 'http://localhost:80/awd/index.php?controller=bank'
+    let slave = this.http.get(url)
+    slave.subscribe({
+      next: (res) => {
+        console.log(res)
+        this.banklist = JSON.parse(JSON.stringify(res))['header'].result
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
 
   getdistrictlist() {
     let url = 'http://localhost:80/awd/index.php?controller=district'
@@ -108,7 +83,7 @@ export class MatFormComponent {
     slave.subscribe({
       next: (res) => {
         console.log(res)
-        return JSON.parse(JSON.stringify(res))
+        this.districtlist =  JSON.parse(JSON.stringify(res))['header'].result
       },
       error: (err) => {
         console.log(err);
