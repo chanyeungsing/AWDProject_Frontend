@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, output, Output } from '@angular/core';
 
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -26,11 +26,15 @@ export class MatFormComponent {
   http: HttpClient;
   banklist!: any;
   districtlist!: any;
+  @Output() dataEmitter = new EventEmitter<any>();
+
+  sendData(data:any){
+    this.dataEmitter.emit(data)
+  }
 
   constructor(http: HttpClient) {
     this.http = http;
   }
-
 
   private fb = inject(FormBuilder);
   BankBranchForm = this.fb.group({
@@ -38,30 +42,46 @@ export class MatFormComponent {
     Branch: [null,],
     District: [null,],
   });
-
-
+  
   onSubmit(formValue: any) {
-    let controller = '';
-    if (formValue['Bank']) {
-      controller = 'bank'
-    } else if (formValue['District']) {
-      controller = 'district'
-    } else if (formValue['Branch']) {
-      controller = 'branch'
+    let bankKey = formValue['Bank']
+    let districtKey = formValue['District']
+    console.log(districtKey)
+    //"http://localhost/awd/index.php?controller=branch&district_key=(key)&bank_key=(key)"
+    let url = "http://localhost:80/awd/index.php?controller=branch&" 
+    if (bankKey && districtKey) {
+      url += "bank_key=" + bankKey + "&district_key=" + districtKey
+    } else if (bankKey) {
+      url += "bank_key=" + bankKey
+    } else if (districtKey) {
+      url += "district_key=" + districtKey
+    } else {
+      console.log('Please provide bank or district.')
+      return;
     }
-    console.log(controller);
-    let url = "http://localhost:80/awd/index.php?controller=";
-    url += controller;
-    console.log(url);
-    console.log(formValue);
-  }
+
+    console.log(url)
+    let slave = this.http.get(url);
+    slave.subscribe(
+      {
+        next: (res) => {
+          console.log(res)
+          this.sendData(res)
+
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      }
+    )
 
 
+  };
 
   ngOnInit() {
     this.getbanklist()
     this.getdistrictlist()
-  }
+  };
 
   getbanklist() {
     let url = 'http://localhost:80/awd/index.php?controller=bank'
@@ -75,7 +95,7 @@ export class MatFormComponent {
         console.log(err);
       }
     })
-  }
+  };
 
   getdistrictlist() {
     let url = 'http://localhost:80/awd/index.php?controller=district'
@@ -83,12 +103,11 @@ export class MatFormComponent {
     slave.subscribe({
       next: (res) => {
         console.log(res)
-        this.districtlist =  JSON.parse(JSON.stringify(res))['header'].result
+        this.districtlist = JSON.parse(JSON.stringify(res))['header'].result
       },
       error: (err) => {
         console.log(err);
       }
     })
-  }
-
+  };
 }

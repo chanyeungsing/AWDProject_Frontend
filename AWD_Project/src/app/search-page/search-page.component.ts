@@ -8,6 +8,13 @@ import { MatTableComponent } from '../mat-table/mat-table.component';
   templateUrl: './search-page.component.html',
   styleUrl: './search-page.component.css'
 })
-export class SearchPageComponent {
 
+
+export class SearchPageComponent {
+  passedData:any;
+  testdata = '1234'
+
+  passdata(data:any){
+    this.passedData = data
+  }
 }
