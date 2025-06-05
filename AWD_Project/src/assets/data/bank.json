@@ -1,0 +1,124 @@
+{
+  "results": [
+    {
+      "bank_key": 1,
+      "bank_name_en": "Industrial and Commercial Bank of China (Asia) Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 2,
+      "bank_name_en": "Bank of  Communications (Hong Kong) Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 3,
+      "bank_name_en": "Standard Chartered Bank (Hong Kong) Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 4,
+      "bank_name_en": "Hang Seng Bank Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 5,
+      "bank_name_en": "The Hongkong and Shanghai Banking Corporation Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 6,
+      "bank_name_en": "The Bank of East Asia Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 7,
+      "bank_name_en": "Shanghai Commercial Bank Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 8,
+      "bank_name_en": "Public Bank (Hong Kong) Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 9,
+      "bank_name_en": "OCBC Bank (Hong Kong) Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 10,
+      "bank_name_en": "Nanyang Commercial Bank, Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 11,
+      "bank_name_en": "Fubon Bank (Hong Kong) Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 12,
+      "bank_name_en": "Dah Sing Bank",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 13,
+      "bank_name_en": "DBS Bank (Hong Kong) Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 14,
+      "bank_name_en": "Citibank (Hong Kong) Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 15,
+      "bank_name_en": "Chong Hing Bank",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 16,
+      "bank_name_en": "China Construction Bank (Asia)",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 17,
+      "bank_name_en": "China CITIC Bank International Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 18,
+      "bank_name_en": "CMB Wing Lung Bank",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 19,
+      "bank_name_en": "Bank of China (Hong Kong) Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    },
+    {
+      "bank_key": 20,
+      "bank_name_en": "Chiyu Banking Corporation Limited",
+      "bank_name_tc": null,
+      "bank_name_sc": null
+    }
+  ]
+}

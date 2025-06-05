@@ -1,0 +1,158 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedBranchs()"
+            [disabled]="!selectedBranchs || !selectedBranchs.length" />
+    </ng-template>
+
+    <ng-template #end>
+        <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+    </ng-template>
+</p-toolbar>
+
+<p-table #dt [value]="branches()" [rows]="10" [columns]="cols" [paginator]="true"
+    [globalFilterFields]="['branch_key', 'district_en', 'bank_name_en', 'branch_name', 'address']"
+    [tableStyle]="{ 'min-width': '75rem' }" [(selection)]="selectedBranchs" [rowHover]="true" dataKey="branch_key"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} branchs" [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 30, 50]">
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">Bank Branch</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            <th pSortableColumn="branch_key" style="min-width: 8rem">
+                Branch Key
+                <p-sortIcon field="branch_key" />
+            </th>
+            <th pSortableColumn="district_en" style="min-width:8rem">
+                District
+                <p-sortIcon field="district_en" />
+            </th>
+            <th pSortableColumn="bank_name_en" style="min-width: 20rem">
+                Bank Name
+                <p-sortIcon field="bank_name_en" />
+            </th>
+            <th pSortableColumn="branch_name" style="min-width: 20rem">
+                Branch Name
+                <p-sortIcon field="branch_name" />
+            </th>
+            <th pSortableColumn="address" style="min-width:20rem">
+                Address
+                <p-sortIcon field="address" />
+            </th>
+            <th pSortableColumn="is_active" style="min-width: 8rem">
+                Active
+                <p-sortIcon field="is_active" />
+            </th>
+            <th style="min-width: 12rem"></th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-branch>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="branch" />
+            </td>
+            <td>{{ branch.branch_key || '-' }}</td>
+            <td>{{ branch.district_en || '-' }}</td>
+            <td>{{ branch.bank_name_en || '-' }}</td>
+            <td>{{ branch.branch_name || '-' }}</td>
+            <td>{{ branch.address || '-' }}</td>
+            <td>
+                <i [class]="branch.is_active == 1 ? 'pi pi-check':'pi pi-times'"
+                    [style]="branch.is_active == 1 ? 'color: green' : 'color: red'"></i>
+            </td>
+            <td>
+                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
+                    (click)="editBranch(branch)" />
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                    (click)="deleteBranch(branch)" />
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="branchDialog" [style]="{ width: '450px' }" header="Branch Detail" [modal]="true">
+    <ng-template #content>
+        <div class="flex flex-col gap-6">
+            <div class="font-semibold text-xl">District</div>
+            <p-select [(ngModel)]="branch.district_key" [options]="districtOptions" optionLabel="district"
+                optionValue="key" placeholder="Select District" required />
+            <small class="text-red-500" *ngIf="submitted && !branch.district_key">District is required.</small>
+
+            <div class="font-semibold text-xl">Bank</div>
+            <p-select [(ngModel)]="branch.bank_key" [options]="bankOptions" optionLabel="bank" optionValue="key"
+                placeholder="Select Bank" required />
+            <small class="text-red-500" *ngIf="submitted && !branch.bank_key">Bank is required.</small>
+
+            <div>
+                <label for="branchName" class="block font-bold mb-3">Branch Name</label>
+                <textarea id="branchName" pTextarea [(ngModel)]="branch.branch_name" required rows="3" cols="20"
+                    required autofocus fluid></textarea>
+                <small class="text-red-500" *ngIf="submitted && !branch.branch_name">Branch name is required.</small>
+            </div>
+
+            <div>
+                <label for="address" class="block font-bold mb-3">Address</label>
+                <textarea id="address" pTextarea [(ngModel)]="branch.address" required rows="3" cols="20" required
+                    fluid></textarea>
+                <small class="text-red-500" *ngIf="submitted && !branch.address">Address is required.</small>
+            </div>
+
+            <div>
+                <label for="serviceHours" class="block font-bold mb-3">Service Hours</label>
+                <textarea id="serviceHours" pTextarea [(ngModel)]="branch.service_hours" required rows="3" cols="20"
+                    fluid></textarea>
+            </div>
+
+            <div>
+                <span class="block font-bold mb-4">Active</span>
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="flex items-center gap-2 col-span-6">
+                        <p-radiobutton id="category1" name="active" [value]="1" [(ngModel)]="branch.is_active" />
+                        <label for="category1">Yes</label>
+                    </div>
+                    <div class="flex items-center gap-2 col-span-6">
+                        <p-radiobutton id="category2" name="active" [value]="0" [(ngModel)]="branch.is_active" />
+                        <label for="category2">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-4">
+                <div class="col-span-6">
+                    <label for="latitude" class="block font-bold mb-3">Latitude</label>
+                    <p-inputnumber id="latitude" [(ngModel)]="branch.latitude" mode="decimal" [max]=180
+                        [maxFractionDigits]=7 fluid />
+                </div>
+                <div class="col-span-6">
+                    <label for="longitude" class="block font-bold mb-3">Longitude</label>
+                    <p-inputnumber id="longitude" [(ngModel)]="branch.longitude" mode="decimal" [max]=180
+                        [maxFractionDigits]=7 fluid />
+                </div>
+            </div>
+
+            <div>
+                <label for="barrierFreeAccess" class="block font-bold mb-3">Barrier Free Access</label>
+                <textarea id="barrierFreeAccess" pTextarea [(ngModel)]="branch.barrier_free_access" required rows="3" cols="20"
+                    fluid></textarea>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+        <p-button label="Save" icon="pi pi-check" (click)="saveBranch()" />
+    </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />
+<p-toast />
