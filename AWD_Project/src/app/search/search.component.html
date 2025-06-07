@@ -1,40 +1,57 @@
-<p-toolbar styleClass="mb-6">
-  <ng-template #start>
-    <p-button
-      label="New"
-      icon="pi pi-plus"
-      severity="secondary"
-      class="mr-2"
-      severity="info"
-      raised
-      (onClick)="openNew()"
+<div class="card flex flex-col gap-4">
+  <div class="flex flex-col gap-2">
+    <label for="district" class="block font-bold">District</label>
+    <p-select
+      id="district"
+      [(ngModel)]="criteria.district_key"
+      [options]="districtOptions"
+      optionLabel="name"
+      optionValue="key"
+      placeholder="Select District"
+      [filter]="true"
+      filterBy="name"
+      [showClear]="true"
     />
-    <p-button
-      severity="secondary"
-      label="Delete"
-      icon="pi pi-trash"
-      severity="danger"
-      raised
-      outlined
-      (onClick)="deleteSelectedBranchs()"
-      [disabled]="!selectedBranchs || !selectedBranchs.length"
-    />
-  </ng-template>
+  </div>
 
-  <ng-template #end>
+  <div class="flex flex-col gap-2">
+    <label for="bank" class="block font-bold">Bank</label>
+    <p-select
+      id="bank"
+      [(ngModel)]="criteria.bank_key"
+      [options]="bankOptions"
+      optionLabel="name"
+      optionValue="key"
+      placeholder="Select Bank"
+      [filter]="true"
+      filterBy="name"
+      [showClear]="true"
+    />
+  </div>
+  <div class="flex flex-wrap gap-2 justify-end">
     <p-button
-      label="Export"
-      icon="pi pi-upload"
+      type="button"
+      label="Reset"
+      icon="pi pi-undo"
       severity="secondary"
       raised
-      severity="success"
-      (onClick)="exportCSV()"
+      [loading]="!branches()"
+      (click)="reset()"
     />
-  </ng-template>
-</p-toolbar>
+    <p-button
+      type="button"
+      label="Search"
+      icon="pi pi-search"
+      raised
+      [loading]="!branches()"
+      (click)="search()"
+    />
+  </div>
+</div>
 
 <p-table
   #dt
+  *ngIf="isShowResults"
   [value]="branches()"
   [rows]="10"
   [columns]="cols"
@@ -47,7 +64,6 @@
     'address'
   ]"
   [tableStyle]="{ 'min-width': '75rem' }"
-  [(selection)]="selectedBranchs"
   [rowHover]="true"
   dataKey="branch_key"
   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} branchs"
@@ -57,7 +73,7 @@
 >
   <ng-template #caption>
     <div class="flex items-center justify-between">
-      <h5 class="m-0">Retail Bank Branch</h5>
+      <h5 class="m-0">Search Result</h5>
       <p-iconfield>
         <p-inputicon styleClass="pi pi-search" />
         <input
@@ -71,9 +87,6 @@
   </ng-template>
   <ng-template #header>
     <tr>
-      <th style="width: 3rem">
-        <p-tableHeaderCheckbox />
-      </th>
       <th pSortableColumn="branch_key" style="min-width: 10rem">
         <b>Branch Key</b>
         <p-sortIcon field="branch_key" />
@@ -103,9 +116,6 @@
   </ng-template>
   <ng-template #body let-branch>
     <tr>
-      <td style="width: 3rem">
-        <p-tableCheckbox [value]="branch" />
-      </td>
       <td>{{ branch.branch_key || "-" }}</td>
       <td>{{ branch.district_en || "-" }}</td>
       <td>{{ branch.bank_name_en || "-" }}</td>
@@ -119,28 +129,30 @@
       </td>
       <td class="flex justify-center">
         <p-button
-          icon="pi pi-pencil"
+          icon="pi pi-info-circle"
           class="mr-2"
           [rounded]="true"
           [outlined]="true"
-          (click)="editBranch(branch)"
-        />
-        <p-button
-          icon="pi pi-trash"
-          severity="danger"
-          [rounded]="true"
-          [outlined]="true"
-          (click)="deleteBranch(branch)"
+          (click)="openDetail(branch)"
         />
       </td>
     </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <ng-container>
+      <tr>
+        <td [attr.colspan]="7" style="text-align: center">
+          No records found.
+        </td>
+      </tr>
+    </ng-container>
   </ng-template>
 </p-table>
 
 <p-dialog
   [(visible)]="branchDialog"
   [style]="{ width: '500px' }"
-  [header]="dialogHeader"
+  header="Branch Detail"
   [modal]="true"
 >
   <ng-template #content>
@@ -154,14 +166,8 @@
           optionLabel="name"
           optionValue="key"
           placeholder="Select District"
-          [filter]="true"
-          filterBy="name"
-          [showClear]="true"
-          required
+          readonly
         />
-        <small class="text-red-500" *ngIf="submitted && !branch.district_key"
-          >District is required.</small
-        >
       </div>
 
       <div class="flex flex-col gap-2">
@@ -173,14 +179,8 @@
           optionLabel="name"
           optionValue="key"
           placeholder="Select Bank"
-          [filter]="true"
-          filterBy="name"
-          [showClear]="true"
-          required
+          readonly
         />
-        <small class="text-red-500" *ngIf="submitted && !branch.bank_key"
-          >Bank is required.</small
-        >
       </div>
 
       <div>
@@ -193,13 +193,10 @@
           required
           rows="3"
           cols="20"
-          required
           autofocus
           fluid
+          readonly
         ></textarea>
-        <small class="text-red-500" *ngIf="submitted && !branch.branch_name"
-          >Branch name is required.</small
-        >
       </div>
 
       <div>
@@ -212,12 +209,9 @@
           required
           rows="3"
           cols="20"
-          required
           fluid
+          readonly
         ></textarea>
-        <small class="text-red-500" *ngIf="submitted && !branch.address"
-          >Address is required.</small
-        >
       </div>
 
       <div>
@@ -228,6 +222,7 @@
           id="serviceHours"
           [(ngModel)]="branch.service_hours"
           [style]="{ height: '150px' }"
+          [readonly]="true"
         >
           <ng-template #header>
             <span class="ql-formats">
@@ -267,6 +262,7 @@
               name="active"
               [value]="1"
               [(ngModel)]="branch.is_active"
+              [disabled]="true"
             />
             <label for="activeOption1">Yes</label>
           </div>
@@ -276,6 +272,7 @@
               name="active"
               [value]="0"
               [(ngModel)]="branch.is_active"
+              [disabled]="true"
             />
             <label for="activeOption2">No</label>
           </div>
@@ -292,6 +289,7 @@
             [max]="180"
             [maxFractionDigits]="16"
             fluid
+            readonly
           />
         </div>
         <div class="col-span-6">
@@ -303,6 +301,7 @@
             [max]="180"
             [maxFractionDigits]="16"
             fluid
+            readonly
           />
         </div>
       </div>
@@ -320,22 +319,13 @@
           rows="3"
           cols="20"
           fluid
+          readonly
         ></textarea>
       </div>
     </div>
   </ng-template>
 
   <ng-template #footer>
-    <p-button
-      label="Cancel"
-      icon="pi pi-times"
-      raised
-      text
-      (click)="closeDialog()"
-    />
-    <p-button label="Save" icon="pi pi-check" raised (click)="saveBranch()" />
+    <p-button label="Cancel" icon="pi pi-times" raised text (click)="closeDialog()" />
   </ng-template>
 </p-dialog>
-
-<p-confirmdialog [style]="{ width: '450px' }" />
-<p-toast />

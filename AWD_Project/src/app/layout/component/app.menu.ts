@@ -5,32 +5,43 @@ import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
 
 @Component({
-    selector: 'app-menu',
-    standalone: true,
-    imports: [CommonModule, AppMenuitem, RouterModule],
-    template: `<ul class="layout-menu">
-        <ng-container *ngFor="let item of model; let i = index">
-            <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
-            <li *ngIf="item.separator" class="menu-separator"></li>
-        </ng-container>
-    </ul> `
+  selector: 'app-menu',
+  standalone: true,
+  imports: [CommonModule, AppMenuitem, RouterModule],
+  template: `<ul class="layout-menu">
+    <ng-container *ngFor="let item of model; let i = index">
+      <li
+        app-menuitem
+        *ngIf="!item.separator"
+        [item]="item"
+        [index]="i"
+        [root]="true"
+      ></li>
+      <li *ngIf="item.separator" class="menu-separator"></li>
+    </ng-container>
+  </ul> `,
 })
 export class AppMenu {
-    model: MenuItem[] = [];
+  model: MenuItem[] = [];
 
-    ngOnInit() {
-        this.model = [
-            {
-                label: '',
-                items: [{ label: 'Home', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
-                    { label: 'Search', icon: 'pi pi-fw pi-search', routerLink: ['/search'] },
-                    {
-                        label: 'Crud',
-                        icon: 'pi pi-fw pi-pencil',
-                        routerLink: ['/crud']
-                    },
-                ]
-            }
-        ];
-    }
+  ngOnInit() {
+    this.model = [
+      {
+        label: 'Branch',
+        items: [
+          { label: 'Home', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
+          {
+            label: 'Search',
+            icon: 'pi pi-fw pi-search',
+            routerLink: ['/search'],
+          },
+          {
+            label: 'Management',
+            icon: 'pi pi-fw pi-pencil',
+            routerLink: ['/crud'],
+          },
+        ],
+      },
+    ];
+  }
 }
