@@ -1,0 +1,48 @@
+<google-map height="550px" width="100%" [center]="center" [zoom]="zoom">
+  <ng-container *ngFor="let b of branches">
+    <map-marker
+      *ngIf="b.latitude && b.longitude"
+      #marker="mapMarker"
+      [position]="{ lat: toNumber(b.latitude), lng: toNumber(b.longitude) }"
+      [title]="b.branch_name"
+      [icon]="bankIcon"
+      (mapClick)="openInfoWindow(marker, b)"
+    ></map-marker>
+  </ng-container>
+
+  <map-marker
+    *ngIf="userPosition"
+    [position]="userPosition"
+    title="You are here"
+    [icon]="userIcon"
+  ></map-marker>
+
+  <map-info-window>
+    <div class="flex flex-col gap-2" style="width: 500px">
+      <div class="flex items-start">
+        <label class="font-bold w-40">District:</label>
+        <div class="flex-1">{{ branch.district_en || "" }}</div>
+      </div>
+      <div class="flex items-start">
+        <label class="font-bold w-40">Bank:</label>
+        <div class="flex-1">{{ branch.bank_name_en || "" }}</div>
+      </div>
+      <div class="flex items-start">
+        <label class="font-bold w-40">Branch Name:</label>
+        <div class="flex-1">{{ branch.branch_name || "" }}</div>
+      </div>
+      <div class="flex items-start">
+        <label class="font-bold w-40">Address:</label>
+        <div class="flex-1">{{ branch.address || "" }}</div>
+      </div>
+      <div class="flex items-start">
+        <label class="font-bold w-40">Service Hours:</label>
+        <div class="flex-1" [innerHTML]="branch.service_hours"></div>
+      </div>
+      <div class="flex items-start">
+        <label class="font-bold w-40">Barrier Free Access:</label>
+        <div class="flex-1">{{ branch["barrier-free_access"] || "" }}</div>
+      </div>
+    </div>
+  </map-info-window>
+</google-map>

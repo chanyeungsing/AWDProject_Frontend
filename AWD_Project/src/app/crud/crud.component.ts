@@ -74,7 +74,7 @@ export class CrudComponent implements OnInit {
 
   branch!: Branch;
 
-  selectedBranchs!: any[] | null;
+  selectedBranches!: any[] | null;
 
   submitted: boolean = false;
 
@@ -84,9 +84,9 @@ export class CrudComponent implements OnInit {
 
   cols!: Column[];
 
-  nextBranchKey!: string;
-
   dialogHeader: string = 'Create Branch';
+
+  loading: boolean = false;
 
   constructor(
     private messageService: MessageService,
@@ -124,11 +124,6 @@ export class CrudComponent implements OnInit {
     }));
   }
 
-  findNextBranchKey() {
-    const branchKeys = this.branchResult.map((item) => Number(item.branch_key));
-    this.nextBranchKey = (Math.max(...branchKeys) + 1).toString();
-  }
-
   refreshBranches(res: any[]) {
     res = res.map((item) => ({
       ...item,
@@ -156,8 +151,17 @@ export class CrudComponent implements OnInit {
     this.branchDialog = true;
   }
 
+  closeDialog() {
+    this.branchDialog = false;
+    this.submitted = false;
+  }
+
   editBranch(branch: any) {
-    this.branch = { ...branch };
+    this.branch = {
+      ...branch,
+      latitude: branch.latitude ? branch.latitude : null,
+      longitude: branch.longitude ? branch.longitude : null,
+    };
     this.dialogHeader = 'Edit Branch';
     this.branchDialog = true;
   }
@@ -168,60 +172,84 @@ export class CrudComponent implements OnInit {
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       rejectButtonProps: {
-        label: 'Cancel',
+        label: 'No',
         icon: 'pi pi-times',
         outlined: true,
       },
       acceptButtonProps: {
-        label: 'Save',
+        label: 'Yes',
         icon: 'pi pi-check',
       },
       accept: async () => {
-        this.delete(branch.branch_key);
-        this.branch = {} as Branch;
-        await this.loadAll();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Branch Deleted',
-          life: 3000,
-        });
+        try {
+          const res: ApiResponse = await this.delete(branch.branch_key);
+          if (res.header.success) {
+            this.branch = {} as Branch;
+            await this.loadAll();
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Successful',
+              detail: 'Branch Deleted',
+              life: 3000,
+            });
+          } else {
+            this.showBackendErrorMessage(res);
+          }
+        } catch (err) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error Occured',
+            detail: 'Failed to delete record',
+            life: 3000,
+          });
+          console.error('delete function fail: ', err);
+        }
       },
     });
   }
 
-  deleteSelectedBranchs() {
+  deleteSelectedBranches() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete the selected branches?',
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       rejectButtonProps: {
-        label: 'Cancel',
+        label: 'No',
         icon: 'pi pi-times',
         outlined: true,
       },
       acceptButtonProps: {
-        label: 'Save',
+        label: 'Yes',
         icon: 'pi pi-check',
       },
       accept: async () => {
-        this.selectedBranchs?.forEach((element) => {
-          this.delete(element.branch_key);
-        });
-        await this.loadAll();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Branchs Deleted',
-          life: 3000,
-        });
+        try {
+          const branches = this.selectedBranches ?? [];
+          if (branches.length > 0) {
+            this.loading = true;
+            await Promise.all(
+              branches.map((item) => this.delete(item.branch_key))
+            );
+          }
+          await this.loadAll();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Successful',
+            detail: 'Branches Deleted',
+            life: 3000,
+          });
+        } catch (err) {
+          this.loading = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error Occured',
+            detail: 'Failed to delete record',
+            life: 3000,
+          });
+          console.error('delete function fail: ', err);
+        }
       },
     });
-  }
-
-  closeDialog() {
-    this.branchDialog = false;
-    this.submitted = false;
   }
 
   saveBranch() {
@@ -234,21 +262,9 @@ export class CrudComponent implements OnInit {
     ) {
       if (this.branch.branch_key) {
         this.updateByKey(this.branch);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Branch Updated',
-          life: 3000,
-        });
       } else {
-        this.branch['branch_key'] = this.nextBranchKey;
+        this.branch['branch_key'] = '';
         this.create(this.branch);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Branch Created',
-          life: 3000,
-        });
       }
 
       this.branchDialog = false;
@@ -258,6 +274,7 @@ export class CrudComponent implements OnInit {
 
   async loadAll(): Promise<void> {
     try {
+      this.loading = true;
       const district: ApiResponse = await this.crudService.getAll<ApiResponse>(
         'district'
       );
@@ -280,19 +297,16 @@ export class CrudComponent implements OnInit {
         key: item.bank_key,
       }));
       this.refreshBranches(this.branchResult);
-      this.findNextBranchKey();
-      this.selectedBranchs = null;
+      this.selectedBranches = null;
+      this.loading = false;
     } catch (err) {
+      this.loading = false;
       console.error('loadAll function fail: ', err);
     }
   }
 
-  async delete(key: string): Promise<void> {
-    try {
-      await this.crudService.deleteByKey('branch', key);
-    } catch (err) {
-      console.error('delete function fail: ', err);
-    }
+  async delete(key: string): Promise<any> {
+    return await this.crudService.deleteByKey('branch', key);
   }
 
   async create(branch: any): Promise<void> {
@@ -322,9 +336,28 @@ export class CrudComponent implements OnInit {
         'barrier-free_access_code': '',
         is_active,
       };
-      await this.crudService.create('branch', formData);
-      await this.loadAll();
+      const res: ApiResponse = await this.crudService.create(
+        'branch',
+        formData
+      );
+      if (res.header.success) {
+        await this.loadAll();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Successful',
+          detail: 'Branch Created',
+          life: 3000,
+        });
+      } else {
+        this.showBackendErrorMessage(res);
+      }
     } catch (err) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error Occured',
+        detail: 'Failed to create record',
+        life: 3000,
+      });
       console.error('create function fail: ', err);
     }
   }
@@ -344,22 +377,40 @@ export class CrudComponent implements OnInit {
         is_active,
       } = branch;
       const formData = {
-        key: branch_key,
         branch_key,
         bank_key,
         district_key,
         branch_name,
         address,
         service_hours: this.replaceHtml(service_hours),
-        latitude,
-        longitude,
+        latitude: branch.latitude ? branch.latitude : '',
+        longitude: branch.longitude ? branch.longitude : '',
         'barrier-free_access': barrier_free_access,
         'barrier-free_access_code': '',
         is_active,
       };
-      await this.crudService.updateByKey('branch', formData);
-      await this.loadAll();
+      const res: ApiResponse = await this.crudService.updateByKey(
+        'branch',
+        formData
+      );
+      if (res.header.success) {
+        await this.loadAll();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Successful',
+          detail: 'Branch Updated',
+          life: 3000,
+        });
+      } else {
+        this.showBackendErrorMessage(res);
+      }
     } catch (err) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error Occured',
+        detail: 'Failed to update record',
+        life: 3000,
+      });
       console.error('update function fail: ', err);
     }
   }
@@ -373,9 +424,22 @@ export class CrudComponent implements OnInit {
     );
   }
 
+  showBackendErrorMessage(res: ApiResponse) {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error Occured',
+      detail: res.header.err_msg,
+      life: 3000,
+    });
+  }
+
   exportCSV() {
     let exportData =
-      this.dt.filteredValue ?? this.selectedBranchs ?? this.dt.value;
+      (this.selectedBranches && this.selectedBranches.length > 0
+        ? this.selectedBranches
+        : null) ??
+      this.dt.filteredValue ??
+      this.dt.value;
 
     exportData = exportData.map((item) => ({
       ...item,
@@ -401,6 +465,6 @@ export class CrudComponent implements OnInit {
     const csv = [headers, ...rows].join('\r\n');
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    saveAs(blob, 'branches.csv');
+    saveAs(blob, 'BranchData.csv');
   }
 }

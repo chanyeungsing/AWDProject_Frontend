@@ -6,19 +6,25 @@ import { AppTopbar } from './app.topbar';
 import { AppSidebar } from './app.sidebar';
 import { AppFooter } from './app.footer';
 import { LayoutService } from '../service/layout.service';
-import { MatNavComponent } from '../../mat-nav/mat-nav.component';
+import { GoogleMapsModule } from '@angular/google-maps';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppFooter],
+  imports: [
+    CommonModule,
+    AppTopbar,
+    AppSidebar,
+    RouterModule,
+    AppFooter,
+    GoogleMapsModule,
+  ],
   template: `<div class="layout-wrapper" [ngClass]="containerClass">
     <app-topbar></app-topbar>
     <app-sidebar></app-sidebar>
     <div class="layout-main-container">
       <div class="layout-main">
         <router-outlet></router-outlet>
-        <!-- <app-mat-nav></app-mat-nav> -->
       </div>
       <app-footer></app-footer>
     </div>

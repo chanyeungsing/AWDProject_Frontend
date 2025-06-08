@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { MatNavComponent } from './mat-nav/mat-nav.component';
+import { GoogleMapsModule } from '@angular/google-maps';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterModule],
+  imports: [RouterModule,GoogleMapsModule],
   templateUrl: './app.component.html',
-  // styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'AWD_Project';

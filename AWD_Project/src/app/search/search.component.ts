@@ -81,7 +81,7 @@ export class SearchComponent implements OnInit {
 
   branch!: Branch;
 
-  selectedBranchs!: any[] | null;
+  selectedBranches!: any[] | null;
 
   @ViewChild('dt') dt!: Table;
 
@@ -89,9 +89,9 @@ export class SearchComponent implements OnInit {
 
   cols!: Column[];
 
-  nextBranchKey!: string;
-
   isShowResults: boolean = false;
+
+  loading: boolean = false;
 
   constructor(
     private messageService: MessageService,
@@ -149,6 +149,8 @@ export class SearchComponent implements OnInit {
       bank_name_en: this.bankResult.find((b) => b.bank_key == item.bank_key)
         ?.bank_name_en,
       branch_key: Number(item.branch_key),
+      district_key: item.district_key.toString(),
+      bank_key: item.bank_key.toString(),
       latitude: item.latitude == 'null' ? null : item.latitude,
       longitude: item.longitude == 'null' ? null : item.longitude,
     }));
@@ -170,13 +172,16 @@ export class SearchComponent implements OnInit {
 
   async search(): Promise<void> {
     try {
+      this.loading = true;
       this.isShowResults = true;
       const branch: ApiResponse =
         await this.searchService.getByKey<ApiResponse>('branch', this.criteria);
       this.branchResult = branch.header.result;
 
       this.refreshBranches(this.branchResult);
+      this.loading = false;
     } catch (err) {
+      this.loading = false;
       console.error('search function fail: ', err);
     }
   }
